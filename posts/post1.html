@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conceptos Fundamentales de Tablas Hash</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER POST -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <span>/</span>
+        <span>Conceptos Fundamentales</span>
+      </nav>
+      <div class="post-header">
+        <h1>📚 Conceptos Fundamentales de Tablas Hash</h1>
+        <div class="post-meta">Tiempo de lectura: 8 min | Nivel: Principiante</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <article class="post-content">
+
+      <h2>¿Qué es una Tabla Hash?</h2>
+      <p>Una <strong>tabla hash</strong> (también llamada <strong>hash table</strong> o <strong>hash map</strong>) es una estructura de datos que implementa un arreglo asociativo: una estructura que mapea <strong>claves</strong> a <strong>valores</strong>.</p>
+      
+      <p>La característica más importante de las tablas hash es que permiten acceder a los valores en tiempo <strong>O(1)</strong> en promedio, lo que las hace extraordinariamente rápidas para operaciones de búsqueda, inserción y eliminación.</p>
+
+      <div class="code-block">
+// Pseudocódigo de una tabla hash simple
+tabla_hash = {
+  "Juan": 25,
+  "María": 30,
+  "Pedro": 28
+}
+
+valor = tabla_hash["Juan"]  // O(1) - ¡Muy rápido!
+      </div>
+
+      <h2>Conceptos Clave</h2>
+
+      <h3>1. Clave (Key)</h3>
+      <p>Una clave es un identificador único para cada elemento en la tabla hash. Las claves pueden ser strings, números, objetos u otros tipos de datos. Cada clave debe ser <span class="highlight">única</span>.</p>
+
+      <h3>2. Valor (Value)</h3>
+      <p>El valor es el dato asociado a una clave. Un valor puede ser cualquier tipo de dato: un número, un string, un objeto, o incluso otro estructura de datos.</p>
+
+      <h3>3. Función Hash (Hash Function)</h3>
+      <p>La <strong>función hash</strong> es el corazón de una tabla hash. Es una función matemática que toma una clave como entrada y devuelve un número (llamado "hash") que se usa como índice en un arreglo.</p>
+
+      <p>Características de una buena función hash:</p>
+      <ul>
+        <li><strong>Determinista:</strong> La misma entrada siempre genera la misma salida</li>
+        <li><strong>Rápida:</strong> Debe calcular el hash en O(1)</li>
+        <li><strong>Uniforme:</strong> Distribye los hashes uniformemente en el rango disponible</li>
+        <li><strong>Mínimas colisiones:</strong> Diferentes claves generan diferentes hashes cuando es posible</li>
+      </ul>
+
+      <div class="code-block">
+// Ejemplo simple de función hash
+function hash(clave, tamaño) {
+  let suma = 0;
+  for (let i = 0; i < clave.length; i++) {
+    suma += clave.charCodeAt(i);
+  }
+  return suma % tamaño;  // Índice entre 0 y tamaño-1
+}
+
+hash("Juan", 10)     // Retorna un índice entre 0-9
+hash("Juan", 10)     // Siempre retorna el MISMO índice
+      </div>
+
+      <h3>4. Índice (Index)</h3>
+      <p>El índice es la posición en el arreglo subyacente donde se almacena el valor. Se calcula aplicando la función hash a la clave y tomando el módulo con el tamaño de la tabla.</p>
+
+      <div class="code-block">
+// Proceso de inserción
+clave = "usuario123"
+hash = función_hash(clave) = 234567
+índice = hash % tamaño_tabla = 234567 % 16 = 7
+
+// El valor se almacena en la posición 7 del arreglo
+tabla[7] = valor_asociado
+      </div>
+
+      <h3>5. Colisiones (Collisions)</h3>
+      <p>Una <strong>colisión</strong> ocurre cuando dos claves diferentes generan el mismo hash (y por lo tanto, el mismo índice). Las colisiones son inevitables en tablas hash prácticas.</p>
+
+      <p>Por ejemplo, en una tabla de 10 elementos, dos claves podrían generar índice 5 ambas. Por la princípio del palomar (pigeonhole principle), con suficientes claves, las colisiones son garantizadas.</p>
+
+      <p>Existen dos estrategias principales para manejar colisiones, que cubriremos en detalle en el próximo post:</p>
+      <ul>
+        <li><strong>Encadenamiento (Chaining):</strong> Almacenar múltiples valores en la misma posición usando listas</li>
+        <li><strong>Direccionamiento Abierto (Open Addressing):</strong> Buscar otra posición vacía en el arreglo</li>
+      </ul>
+
+      <h2>¿Por qué son tan eficientes?</h2>
+
+      <p>Las tablas hash son eficientes porque el tiempo de acceso depende del tamaño del arreglo, no del número de elementos almacenados.</p>
+
+      <h3>Comparación de tiempos (en promedio)</h3>
+      <div class="code-block">
+Operación       Arreglo    Lista Enlazada    Tabla Hash
+Búsqueda        O(n)       O(n)              O(1)
+Inserción       O(n)       O(n)              O(1)
+Eliminación     O(n)       O(n)              O(1)
+
+Donde n = número de elementos
+      </div>
+
+      <p>Con una tabla hash bien diseñada, estas operaciones se ejecutan en <strong>tiempo constante</strong>, sin importar cuántos elementos contenga la tabla.</p>
+
+      <h2>Ejemplo Visual</h2>
+
+      <div class="diagram">
+        <svg width="100%" height="280" viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+          <!-- Input -->
+          <text x="10" y="25" font-size="14" font-weight="bold" fill="#7c3aed">1. Clave</text>
+          <rect x="10" y="35" width="120" height="40" fill="#e0e7ff" stroke="#7c3aed" stroke-width="2" rx="4"/>
+          <text x="70" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#1f2937">usuario_42</text>
+
+          <!-- Arrow -->
+          <path d="M 140 55 L 160 55" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+          <!-- Hash Function -->
+          <text x="170" y="25" font-size="14" font-weight="bold" fill="#7c3aed">2. Función Hash</text>
+          <circle cx="220" cy="55" r="25" fill="#f3f4f6" stroke="#7c3aed" stroke-width="2"/>
+          <text x="220" y="60" text-anchor="middle" font-size="12" fill="#1f2937">hash()</text>
+
+          <!-- Arrow -->
+          <path d="M 250 55 L 270 55" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+          <!-- Hash Output -->
+          <text x="280" y="25" font-size="14" font-weight="bold" fill="#7c3aed">3. Índice</text>
+          <rect x="280" y="35" width="100" height="40" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" rx="4"/>
+          <text x="330" y="65" text-anchor="middle" font-size="16" font-weight="bold" fill="#1f2937">5</text>
+
+          <!-- Arrow down -->
+          <path d="M 330 75 L 330 100" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+          <!-- Array -->
+          <text x="10" y="140" font-size="14" font-weight="bold" fill="#7c3aed">4. Array</text>
+          
+          <!-- Array cells -->
+          <g id="cells">
+            <rect x="10" y="150" width="50" height="40" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="4"/>
+            <text x="35" y="175" text-anchor="middle" font-size="12" fill="#6b7280">[0]</text>
+
+            <rect x="70" y="150" width="50" height="40" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="4"/>
+            <text x="95" y="175" text-anchor="middle" font-size="12" fill="#6b7280">[1]</text>
+
+            <rect x="130" y="150" width="50" height="40" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="4"/>
+            <text x="155" y="175" text-anchor="middle" font-size="12" fill="#6b7280">[2]</text>
+
+            <rect x="190" y="150" width="50" height="40" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="4"/>
+            <text x="215" y="175" text-anchor="middle" font-size="12" fill="#6b7280">[3]</text>
+
+            <rect x="250" y="150" width="50" height="40" fill="#e0e7ff" stroke="#7c3aed" stroke-width="2" rx="4"/>
+            <text x="275" y="175" text-anchor="middle" font-size="12" fill="#7c3aed">[5]</text>
+
+            <rect x="310" y="150" width="50" height="40" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="4"/>
+            <text x="335" y="175" text-anchor="middle" font-size="12" fill="#6b7280">[6]</text>
+          </g>
+
+          <!-- Value stored -->
+          <text x="250" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#7c3aed">Valor: 42</text>
+
+          <!-- Arrow mark -->
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#7c3aed"/>
+            </marker>
+          </defs>
+
+          <text x="10" y="260" font-size="12" fill="#6b7280">El valor se almacena en el índice calculado por la función hash</text>
+        </svg>
+      </div>
+
+      <h2>Resumen</h2>
+      <p>Las tablas hash son estructuras de datos fundamentales que combinan:</p>
+      <ul>
+        <li>Una <strong>función hash</strong> que mapea claves a índices</li>
+        <li>Un <strong>arreglo</strong> que almacena los valores</li>
+        <li>Una <strong>estrategia de colisiones</strong> para manejar claves que generan el mismo índice</li>
+      </ul>
+      
+      <p>El resultado es una estructura que proporciona búsqueda, inserción y eliminación en <strong>O(1)</strong> tiempo promedio, lo que las hace ideales para muchas aplicaciones del mundo real.</p>
+
+      <p><strong>En el próximo post</strong>, exploraremos cómo manejar las colisiones que son inevitables en tablas hash prácticas.</p>
+
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>← <a href="post2.html" style="color: white; text-decoration: underline;">Siguiente: Manejo de Colisiones</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>

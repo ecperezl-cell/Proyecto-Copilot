@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Implementación de Tablas Hash</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER POST -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <span>/</span>
+        <span>Implementación</span>
+      </nav>
+      <div class="post-header">
+        <h1>⚙️ Implementación de Tablas Hash</h1>
+        <div class="post-meta">Tiempo de lectura: 12 min | Nivel: Avanzado</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <article class="post-content">
+
+      <h2>Introducción</h2>
+      <p>Ahora que entendemos los conceptos fundamentales y las estrategias de colisión, implementemos una tabla hash completa usando <strong>JavaScript</strong>. Usaremos <strong>encadenamiento</strong> como estrategia de resolución de colisiones.</p>
+
+      <h2>Paso 1: La Función Hash</h2>
+
+      <p>El primer componente es una buena función hash. Una función hash debe ser:</p>
+      <ul>
+        <li><strong>Rápida:</strong> Debe ejecutarse en O(1)</li>
+        <li><strong>Determinista:</strong> Misma entrada = misma salida</li>
+        <li><strong>Uniforme:</strong> Distribuir valores uniformemente en el rango [0, tamaño)</li>
+      </ul>
+
+      <div class="code-block">
+// Función hash simple
+function hashFunction(key, size) {
+  let hash = 0;
+  
+  // Iterar sobre cada carácter de la clave
+  for (let i = 0; i < key.length; i++) {
+    // Obtener código ASCII del carácter
+    hash += key.charCodeAt(i);
+  }
+  
+  // Retornar índice entre 0 y size-1
+  return hash % size;
+}
+
+// Ejemplos
+console.log(hashFunction("juan", 10));    // 5
+console.log(hashFunction("juan", 10));    // 5 (determinista)
+console.log(hashFunction("maria", 10));   // 8
+      </div>
+
+      <h3>Mejorando la Función Hash</h3>
+
+      <p>La función anterior es simple pero puede mejorar su distribución. Los bits de orden bajo tienden a no distribuirse bien. Una técnica es usar <strong>bit shifting</strong>:</p>
+
+      <div class="code-block">
+// Función hash mejorada con bit shifting
+function hashFunction(key, size) {
+  let hash = 0;
+  
+  for (let i = 0; i < key.length; i++) {
+    // Usar bit shifting para mejor distribución
+    // (hash << 5) - hash es equivalente a hash * 31
+    hash = ((hash << 5) - hash) + key.charCodeAt(i);
+    // Asegurar que es un entero de 32 bits
+    hash = hash & hash;
+  }
+  
+  // Tomar valor absoluto y aplicar módulo
+  return Math.abs(hash) % size;
+}
+      </div>
+
+      <h2>Paso 2: La Clase HashTable</h2>
+
+      <p>Ahora implementemos la clase principal con encadenamiento:</p>
+
+      <div class="code-block">
+class HashTable {
+  constructor(size = 8) {
+    this.size = size;
+    this.table = [];
+    
+    // Inicializar cada posición con un array vacío
+    for (let i = 0; i < size; i++) {
+      this.table[i] = [];
+    }
+  }
+  
+  // Insertar un par clave-valor
+  set(key, value) {
+    const index = hashFunction(key, this.size);
+    const bucket = this.table[index];
+    
+    // Verificar si la clave ya existe (actualizar)
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i][0] === key) {
+        bucket[i][1] = value;
+        return;
+      }
+    }
+    
+    // Si no existe, agregar nuevo par
+    bucket.push([key, value]);
+  }
+  
+  // Obtener un valor por clave
+  get(key) {
+    const index = hashFunction(key, this.size);
+    const bucket = this.table[index];
+    
+    // Buscar la clave en la lista
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i][0] === key) {
+        return bucket[i][1];
+      }
+    }
+    
+    // Clave no encontrada
+    return undefined;
+  }
+  
+  // Eliminar un par por clave
+  remove(key) {
+    const index = hashFunction(key, this.size);
+    const bucket = this.table[index];
+    
+    // Buscar y eliminar
+    for (let i = 0; i < bucket.length; i++) {
+      if (bucket[i][0] === key) {
+        bucket.splice(i, 1);
+        return true;
+      }
+    }
+    
+    return false;  // Clave no encontrada
+  }
+  
+  // Limpiar toda la tabla
+  clear() {
+    for (let i = 0; i < this.size; i++) {
+      this.table[i] = [];
+    }
+  }
+  
+  // Obtener todas las claves
+  keys() {
+    const allKeys = [];
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.table[i].length; j++) {
+        allKeys.push(this.table[i][j][0]);
+      }
+    }
+    return allKeys;
+  }
+  
+  // Obtener todos los valores
+  values() {
+    const allValues = [];
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.table[i].length; j++) {
+        allValues.push(this.table[i][j][1]);
+      }
+    }
+    return allValues;
+  }
+}
+      </div>
+
+      <h2>Paso 3: Uso de la Tabla Hash</h2>
+
+      <div class="code-block">
+// Crear una tabla hash
+const miTabla = new HashTable(8);
+
+// Insertar datos
+miTabla.set("nombre", "Juan");
+miTabla.set("edad", 25);
+miTabla.set("ciudad", "Madrid");
+
+// Buscar datos
+console.log(miTabla.get("nombre"));  // "Juan"
+console.log(miTabla.get("edad"));    // 25
+console.log(miTabla.get("país"));    // undefined
+
+// Obtener todas las claves y valores
+console.log(miTabla.keys());         // ["nombre", "edad", "ciudad"]
+console.log(miTabla.values());       // ["Juan", 25, "Madrid"]
+
+// Actualizar un valor
+miTabla.set("edad", 26);
+console.log(miTabla.get("edad"));    // 26
+
+// Eliminar un par
+miTabla.remove("ciudad");
+console.log(miTabla.get("ciudad"));  // undefined
+
+// Limpiar toda la tabla
+miTabla.clear();
+console.log(miTabla.keys());         // []
+      </div>
+
+      <h2>Análisis de Complejidad</h2>
+
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="background: #f3f4f6;">
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Operación</th>
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Mejor Caso</th>
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Caso Promedio</th>
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Peor Caso</th>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>set()</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(1)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(1)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(n)</td>
+        </tr>
+        <tr style="background: #f9fafb;">
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>get()</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(1)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(1)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(n)</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>remove()</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(1)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(1)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">O(n)</td>
+        </tr>
+      </table>
+
+      <p><strong>Nota:</strong> El peor caso O(n) ocurre cuando todas las claves generan el mismo hash (colisión completa). En la práctica, esto es raro con una buena función hash.</p>
+
+      <h2>Mejoras Avanzadas</h2>
+
+      <h3>1. Rehashing (Redimensionamiento)</h3>
+
+      <p>Cuando el factor de carga supera un umbral, es recomendable aumentar el tamaño de la tabla y reinsertar todos los elementos:</p>
+
+      <div class="code-block">
+class HashTable {
+  constructor(size = 8) {
+    this.size = size;
+    this.table = [];
+    this.count = 0;
+    this._init();
+  }
+  
+  _init() {
+    for (let i = 0; i < this.size; i++) {
+      this.table[i] = [];
+    }
+  }
+  
+  set(key, value) {
+    // ... código de inserción ...
+    this.count++;
+    
+    // Rehashing si factor > 0.75
+    if (this.count / this.size > 0.75) {
+      this._resize();
+    }
+  }
+  
+  _resize() {
+    const oldTable = this.table;
+    this.size = this.size * 2;
+    this.count = 0;
+    this._init();
+    
+    // Reinsertar todos los elementos
+    for (let i = 0; i < oldTable.length; i++) {
+      for (let j = 0; j < oldTable[i].length; j++) {
+        const [key, value] = oldTable[i][j];
+        this.set(key, value);
+      }
+    }
+  }
+}
+      </div>
+
+      <h3>2. Estadísticas</h3>
+
+      <p>Podemos agregar métodos para monitorear el estado de la tabla:</p>
+
+      <div class="code-block">
+class HashTable {
+  // ... otros métodos ...
+  
+  getStats() {
+    const stats = {
+      size: this.size,
+      entries: this.count,
+      loadFactor: this.count / this.size,
+      collisions: this._countCollisions()
+    };
+    return stats;
+  }
+  
+  _countCollisions() {
+    let collisions = 0;
+    for (let i = 0; i < this.size; i++) {
+      if (this.table[i].length > 1) {
+        collisions += this.table[i].length - 1;
+      }
+    }
+    return collisions;
+  }
+}
+
+// Uso
+const tabla = new HashTable();
+tabla.set("a", 1);
+tabla.set("b", 2);
+tabla.set("c", 3);
+
+console.log(tabla.getStats());
+// { size: 8, entries: 3, loadFactor: 0.375, collisions: 0 }
+      </div>
+
+      <h2>Comparación con Estructuras Nativas</h2>
+
+      <p>En JavaScript, podemos usar <strong>Map</strong> y <strong>Object</strong> en lugar de implementar nuestra propia tabla hash:</p>
+
+      <div class="code-block">
+// Usando Object
+const obj = {};
+obj["nombre"] = "Juan";
+obj["edad"] = 25;
+
+// Usando Map (recomendado para hash tables)
+const mapa = new Map();
+mapa.set("nombre", "Juan");
+mapa.set("edad", 25);
+
+// Las estructuras nativas están altamente optimizadas:
+// - Mejor rendimiento
+// - Mejor manejo de colisiones
+// - Soporte para tipos de claves complejas
+      </div>
+
+      <h2>Casos de Uso en el Mundo Real</h2>
+
+      <ul>
+        <li><strong>Caché:</strong> Almacenar resultados de operaciones costosas</li>
+        <li><strong>Indexación:</strong> Bases de datos usan tablas hash para búsquedas rápidas</li>
+        <li><strong>Conteo:</strong> Contar frecuencia de elementos (análisis de texto)</li>
+        <li><strong>Deduplicación:</strong> Detectar elementos duplicados en O(1)</li>
+        <li><strong>Asociaciones:</strong> Diccionarios, mapeos clave-valor</li>
+        <li><strong>Compiladores:</strong> Tablas de símbolos</li>
+      </ul>
+
+      <h2>Resumen</h2>
+
+      <p>Hemos aprendido a implementar una tabla hash completa con:</p>
+      <ul>
+        <li>Una función hash eficiente</li>
+        <li>Resolución de colisiones mediante encadenamiento</li>
+        <li>Operaciones fundamentales: set, get, remove</li>
+        <li>Mejoras como rehashing y estadísticas</li>
+      </ul>
+
+      <p>Las tablas hash son una de las estructuras de datos más importantes en programación, usadas en casi todas las aplicaciones modernas. Comprender cómo funcionan internamente es esencial para escribir código eficiente.</p>
+
+      <p>¡Ahora estás listo para usar tablas hash de manera efectiva en tus proyectos!</p>
+
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>← <a href="post2.html" style="color: white; text-decoration: underline;">Anterior: Manejo de Colisiones</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manejo de Colisiones en Tablas Hash</title>
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER POST -->
+  <header class="site-header">
+    <div class="container">
+      <nav class="breadcrumb">
+        <a href="../index.html">Inicio</a>
+        <span>/</span>
+        <span>Manejo de Colisiones</span>
+      </nav>
+      <div class="post-header">
+        <h1>🔗 Manejo de Colisiones en Tablas Hash</h1>
+        <div class="post-meta">Tiempo de lectura: 10 min | Nivel: Intermedio</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main class="container">
+    <article class="post-content">
+
+      <h2>Introducción a Colisiones</h2>
+      <p>En el post anterior, mencionamos que las colisiones ocurren cuando dos claves diferentes generan el mismo hash. Esta es una realidad inevitable en cualquier tabla hash del mundo real.</p>
+
+      <p>Por el <strong>Principio del Palomar</strong> (Pigeonhole Principle), si tenemos n elementos y m posiciones en nuestra tabla (donde n > m), garantizamos que habrá al menos una colisión.</p>
+
+      <h3>¿Por qué ocurren?</h3>
+      <div class="code-block">
+// Tabla con 10 posiciones (0-9)
+función hash("Juan", 10)   = 5
+función hash("María", 10)  = 5  // ¡COLISIÓN!
+
+// Ambas claves generan el mismo índice
+// ¿Dónde guardamos a María?
+      </div>
+
+      <p>Existen dos estrategias principales para resolver este problema. Veamos cada una en detalle.</p>
+
+      <h2>1. Encadenamiento (Chaining)</h2>
+
+      <h3>Concepto</h3>
+      <p>En el encadenamiento, en lugar de almacenar un solo valor en cada posición de la tabla, almacenamos una <strong>lista de pares clave-valor</strong>. Cuando hay una colisión, simplemente agregamos el nuevo par a la lista.</p>
+
+      <div class="diagram">
+        <svg width="100%" height="250" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+          <!-- Header -->
+          <text x="20" y="25" font-size="14" font-weight="bold" fill="#7c3aed">Tabla Hash con Encadenamiento</text>
+
+          <!-- Array -->
+          <text x="20" y="60" font-size="12" fill="#6b7280">Índice</text>
+          <g id="chaining-array">
+            <!-- Index 0 -->
+            <rect x="20" y="70" width="50" height="30" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1" rx="3"/>
+            <text x="45" y="90" text-anchor="middle" font-size="11" fill="#1f2937">[0]</text>
+
+            <!-- Index 1 -->
+            <rect x="80" y="70" width="50" height="30" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1" rx="3"/>
+            <text x="105" y="90" text-anchor="middle" font-size="11" fill="#1f2937">[1]</text>
+
+            <!-- Index 2 with chain -->
+            <rect x="140" y="70" width="50" height="30" fill="#e0e7ff" stroke="#7c3aed" stroke-width="2" rx="3"/>
+            <text x="165" y="90" text-anchor="middle" font-size="11" fill="#7c3aed">[2]</text>
+
+            <!-- Arrow to chain -->
+            <path d="M 165 100 L 165 125" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Chain nodes -->
+            <rect x="125" y="130" width="80" height="35" fill="#e0e7ff" stroke="#7c3aed" stroke-width="1" rx="3"/>
+            <text x="135" y="148" font-size="11" fill="#1f2937">Juan</text>
+            <text x="135" y="160" font-size="10" fill="#6b7280">→ 25</text>
+
+            <!-- Arrow to next -->
+            <path d="M 205 147 L 225 147" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Second chain node -->
+            <rect x="225" y="130" width="80" height="35" fill="#fef3c7" stroke="#f59e0b" stroke-width="1" rx="3"/>
+            <text x="235" y="148" font-size="11" fill="#1f2937">Carlos</text>
+            <text x="235" y="160" font-size="10" fill="#6b7280">→ 35</text>
+
+            <!-- Arrow to next -->
+            <path d="M 305 147 L 325 147" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+            <!-- Third chain node -->
+            <rect x="325" y="130" width="80" height="35" fill="#fef3c7" stroke="#f59e0b" stroke-width="1" rx="3"/>
+            <text x="335" y="148" font-size="11" fill="#1f2937">Ana</text>
+            <text x="335" y="160" font-size="10" fill="#6b7280">→ 28</text>
+
+            <!-- Null marker -->
+            <path d="M 405 147 L 420 147" stroke="#7c3aed" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+            <circle cx="430" cy="147" r="4" fill="#7c3aed"/>
+          </g>
+
+          <!-- Info boxes -->
+          <g id="info">
+            <rect x="20" y="190" width="260" height="50" fill="#f0fdf4" stroke="#86efac" stroke-width="1" rx="3"/>
+            <text x="30" y="208" font-size="12" font-weight="bold" fill="#16a34a">✓ Ventajas:</text>
+            <text x="30" y="225" font-size="11" fill="#15803d">• Simple de implementar</text>
+            <text x="30" y="237" font-size="11" fill="#15803d">• No hay límite de colisiones</text>
+
+            <rect x="300" y="190" width="260" height="50" fill="#fef2f2" stroke="#fca5a5" stroke-width="1" rx="3"/>
+            <text x="310" y="208" font-size="12" font-weight="bold" fill="#dc2626">✗ Desventajas:</text>
+            <text x="310" y="225" font-size="11" fill="#b91c1c">• Usa memoria extra para las listas</text>
+            <text x="310" y="237" font-size="11" fill="#b91c1c">• Búsqueda degradada en muchas colisiones</text>
+          </g>
+
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#7c3aed"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h3>Operaciones en Encadenamiento</h3>
+
+      <div class="code-block">
+// INSERCIÓN con encadenamiento
+función insertar(clave, valor):
+  índice = hash(clave, tamaño_tabla)
+  lista = tabla[índice]
+  
+  // Buscar si la clave ya existe (actualizar)
+  para cada par en lista:
+    si par.clave == clave:
+      par.valor = valor
+      retornar
+  
+  // Si no existe, agregar al final de la lista
+  lista.agregar(nuevo_par(clave, valor))
+
+// BÚSQUEDA con encadenamiento
+función buscar(clave):
+  índice = hash(clave, tamaño_tabla)
+  lista = tabla[índice]
+  
+  para cada par en lista:
+    si par.clave == clave:
+      retornar par.valor
+  
+  retornar no_encontrado
+      </div>
+
+      <p><strong>Complejidad de tiempo:</strong> En el mejor caso, O(1) si la lista es corta. En el peor caso, O(n) si todas las claves tienen el mismo hash.</p>
+
+      <h2>2. Direccionamiento Abierto (Open Addressing)</h2>
+
+      <h3>Concepto</h3>
+      <p>En lugar de usar listas, el direccionamiento abierto mantiene todos los datos dentro del arreglo original. Cuando ocurre una colisión, se busca otra posición disponible siguiendo una <strong>secuencia de prueba</strong>.</p>
+
+      <h3>Técnicas de Prueba</h3>
+
+      <h4>a) Prueba Lineal (Linear Probing)</h4>
+      <p>Si la posición hash está ocupada, intenta la siguiente posición (hash + 1), luego hash + 2, etc., envolviendo al llegar al final.</p>
+
+      <div class="diagram">
+        <svg width="100%" height="150" viewBox="0 0 600 150" xmlns="http://www.w3.org/2000/svg">
+          <text x="20" y="25" font-size="14" font-weight="bold" fill="#7c3aed">Prueba Lineal: hash(x)=5</text>
+          
+          <g id="linear-probe">
+            <!-- Cells 0-2 empty -->
+            <rect x="20" y="40" width="40" height="35" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="3"/>
+            <text x="40" y="65" text-anchor="middle" font-size="11" fill="#6b7280">[0]</text>
+
+            <rect x="70" y="40" width="40" height="35" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="3"/>
+            <text x="90" y="65" text-anchor="middle" font-size="11" fill="#6b7280">[1]</text>
+
+            <rect x="120" y="40" width="40" height="35" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" rx="3"/>
+            <text x="140" y="65" text-anchor="middle" font-size="11" fill="#6b7280">[2]</text>
+
+            <!-- Cell 3-5 occupied (hash at 5) -->
+            <rect x="170" y="40" width="40" height="35" fill="#e0e7ff" stroke="#7c3aed" stroke-width="1" rx="3"/>
+            <text x="190" y="65" text-anchor="middle" font-size="11" fill="#7c3aed">[3]</text>
+
+            <rect x="220" y="40" width="40" height="35" fill="#e0e7ff" stroke="#7c3aed" stroke-width="1" rx="3"/>
+            <text x="240" y="65" text-anchor="middle" font-size="11" fill="#7c3aed">[4]</text>
+
+            <rect x="270" y="40" width="40" height="35" fill="#fef3c7" stroke="#f59e0b" stroke-width="2" rx="3"/>
+            <text x="290" y="65" text-anchor="middle" font-size="10" font-weight="bold" fill="#b45309">[5]</text>
+
+            <!-- Cell 6 with new value -->
+            <rect x="320" y="40" width="40" height="35" fill="#dcfce7" stroke="#86efac" stroke-width="2" rx="3"/>
+            <text x="340" y="65" text-anchor="middle" font-size="10" font-weight="bold" fill="#16a34a">[6]✓</text>
+
+            <!-- Arrows showing probing -->
+            <path d="M 290 80 L 305 95" stroke="#f59e0b" stroke-width="2" stroke-dasharray="4" fill="none" marker-end="url(#arrowhead-orange)"/>
+            <path d="M 340 80 L 340 90" stroke="#16a34a" stroke-width="2" fill="none" marker-end="url(#arrowhead-green)"/>
+          </g>
+
+          <text x="20" y="130" font-size="11" fill="#6b7280">hash→[5] ocupado → intenta [6] → ✓ libre → insertar aquí</text>
+
+          <defs>
+            <marker id="arrowhead-orange" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#f59e0b"/>
+            </marker>
+            <marker id="arrowhead-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+              <polygon points="0 0, 10 3, 0 6" fill="#16a34a"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <h4>b) Prueba Cuadrática (Quadratic Probing)</h4>
+      <p>En lugar de incrementar linealmente, intenta en posiciones: hash + 1², hash + 2², hash + 3², etc.</p>
+
+      <div class="code-block">
+// Linear Probing
+próxima_posición = (hash + i) % tamaño_tabla
+
+// Quadratic Probing
+próxima_posición = (hash + i²) % tamaño_tabla
+      </div>
+
+      <h3>Operaciones en Direccionamiento Abierto</h3>
+
+      <div class="code-block">
+// INSERCIÓN con direccionamiento abierto
+función insertar(clave, valor):
+  índice = hash(clave, tamaño_tabla)
+  i = 0
+  
+  mientras i < tamaño_tabla:
+    posición = (índice + i) % tamaño_tabla
+    
+    si tabla[posición] está vacía O ha sido eliminada:
+      tabla[posición] = nuevo_par(clave, valor)
+      retornar éxito
+    
+    si tabla[posición].clave == clave:
+      tabla[posición].valor = valor  // Actualizar
+      retornar éxito
+    
+    i = i + 1  // Siguiente prueba
+  
+  retornar tabla_llena
+
+// BÚSQUEDA con direccionamiento abierto
+función buscar(clave):
+  índice = hash(clave, tamaño_tabla)
+  i = 0
+  
+  mientras i < tamaño_tabla:
+    posición = (índice + i) % tamaño_tabla
+    
+    si tabla[posición] está vacía:
+      retornar no_encontrado  // Marca de final
+    
+    si tabla[posición].clave == clave:
+      retornar tabla[posición].valor
+    
+    i = i + 1
+  
+  retornar no_encontrado
+      </div>
+
+      <h3>Comparación de Estrategias</h3>
+
+      <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+        <tr style="background: #f3f4f6;">
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Aspecto</th>
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Encadenamiento</th>
+          <th style="border: 1px solid #d1d5db; padding: 10px; text-align: left;">Direccionamiento Abierto</th>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>Memoria</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Usa más (listas extras)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Solo el arreglo</td>
+        </tr>
+        <tr style="background: #f9fafb;">
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>Eliminación</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Simple (quitar de lista)</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Compleja (requiere marcas)</td>
+        </tr>
+        <tr>
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>Factor de Carga</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Puede ser > 1</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Debe ser < 1</td>
+        </tr>
+        <tr style="background: #f9fafb;">
+          <td style="border: 1px solid #d1d5db; padding: 10px;"><strong>Caché</strong></td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Pobre localidad</td>
+          <td style="border: 1px solid #d1d5db; padding: 10px;">Mejor localidad</td>
+        </tr>
+      </table>
+
+      <h2>Factor de Carga</h2>
+      <p>El <strong>factor de carga</strong> (load factor) es la relación entre el número de elementos almacenados y el tamaño de la tabla. Es un indicador clave de rendimiento.</p>
+
+      <div class="code-block">
+factor_de_carga = cantidad_elementos / tamaño_tabla
+
+Ejemplo:
+- Tabla tamaño 10
+- 7 elementos almacenados
+- Factor = 7/10 = 0.7
+      </div>
+
+      <p><strong>Recomendaciones:</strong></p>
+      <ul>
+        <li><strong>Encadenamiento:</strong> Factor ≤ 1.0 es ideal, pero funciona bien hasta 2.0 o más</li>
+        <li><strong>Direccionamiento abierto:</strong> Factor < 0.75 es recomendado, mejor si < 0.5</li>
+      </ul>
+
+      <p>Cuando el factor de carga excede estos umbrales, conviene expandir la tabla (rehashing) para mantener el rendimiento.</p>
+
+      <h2>Resumen</h2>
+      <p>El manejo adecuado de colisiones es crucial para el rendimiento de las tablas hash:</p>
+      <ul>
+        <li><strong>Encadenamiento:</strong> Simple y flexible, pero usa más memoria</li>
+        <li><strong>Direccionamiento abierto:</strong> Más eficiente en memoria, pero más complejo de implementar</li>
+        <li><strong>Factor de carga:</strong> Debe monitorearse para mantener buen rendimiento</li>
+      </ul>
+
+      <p><strong>En el próximo post</strong>, veremos cómo implementar estas estrategias en código real.</p>
+
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>← <a href="post1.html" style="color: white; text-decoration: underline;">Anterior: Conceptos Fundamentales</a> | <a href="post3.html" style="color: white; text-decoration: underline;">Siguiente: Implementación →</a></p>
+    </div>
+  </footer>
+
+</body>
+</html>

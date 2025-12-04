@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tablas Hash - Guía Completa y Interactiva</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-content">
+        <div>
+          <h1>📊 Tablas Hash</h1>
+          <p class="subtitle">Una guía completa y práctica sobre esta estructura de datos fundamental</p>
+        </div>
+        <nav class="main-nav">
+          <a href="index.html" class="active">Inicio</a>
+          <a href="posts/post1.html">Conceptos</a>
+          <a href="posts/post2.html">Colisiones</a>
+          <a href="posts/post3.html">Implementación</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="container">
+
+    <!-- HERO -->
+    <section class="hero">
+      <h2>¿Qué son las Tablas Hash?</h2>
+      <p>Una tabla hash es una estructura de datos que mapea claves a valores usando una función hash. Es una de las estructuras más importantes en programación, ofreciendo acceso en O(1) en promedio.</p>
+    </section>
+
+    <!-- CARDS -->
+    <div class="cards">
+      <article class="card">
+        <h3><a href="posts/post1.html">📚 Conceptos Fundamentales</a></h3>
+        <p>Aprende qué es una tabla hash, cómo funcionan las funciones hash, y por qué son tan eficientes. Incluye explicaciones de claves, valores, índices y colisiones.</p>
+        <div class="meta">Tiempo de lectura: 8 min</div>
+      </article>
+
+      <article class="card">
+        <h3><a href="posts/post2.html">⚡ Manejo de Colisiones</a></h3>
+        <p>Explora las dos estrategias principales: encadenamiento y direccionamiento abierto. Comprende linear probing, quadratic probing y double hashing con ejemplos visuales.</p>
+        <div class="meta">Tiempo de lectura: 10 min</div>
+      </article>
+
+      <article class="card">
+        <h3><a href="posts/post3.html">💻 Implementación Práctica</a></h3>
+        <p>Descubre cómo se implementan las operaciones fundamentales: insertar, buscar y eliminar. Análisis detallado con código y diagramas para ambas estrategias.</p>
+        <div class="meta">Tiempo de lectura: 12 min</div>
+      </article>
+    </div>
+
+    <!-- DEMO SECTION -->
+    <section class="demo-section">
+      <h2>🎮 Demo Interactiva</h2>
+      <p>Experimenta cómo funcionan las tablas hash en tiempo real. Prueba insertar, buscar y eliminar elementos en modo chaining u open addressing.</p>
+
+      <div class="demo-container">
+        <!-- Controles -->
+        <div class="demo-controls">
+          <div class="control-group">
+            <label for="strategySelect">Estrategia</label>
+            <select id="strategySelect">
+              <option value="chaining">Encadenamiento (Chaining)</option>
+              <option value="open">Direccionamiento Abierto (Linear Probing)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label for="tableSizeInput">Tamaño de la tabla (3-64)</label>
+            <input type="number" id="tableSizeInput" min="3" max="64" value="8">
+          </div>
+
+          <div class="control-group">
+            <label for="keyInput">Clave</label>
+            <input type="text" id="keyInput" placeholder="ej: nombre, id, usuario">
+          </div>
+
+          <div class="control-group">
+            <label for="valueInput">Valor</label>
+            <input type="text" id="valueInput" placeholder="ej: Juan, 123, juan_doe">
+          </div>
+
+          <div class="button-group">
+            <button class="btn btn-primary" id="insertBtn">➕ Insertar</button>
+            <button class="btn btn-primary" id="searchBtn">🔍 Buscar</button>
+            <button class="btn btn-secondary" id="deleteBtn">🗑️ Eliminar</button>
+            <button class="btn btn-secondary" id="clearBtn">🔄 Limpiar</button>
+          </div>
+        </div>
+
+        <!-- Visualización -->
+        <div class="demo-visual" id="demoVisual">
+          <p style="color: var(--text-secondary);">Aquí se mostrará la visualización...</p>
+        </div>
+      </div>
+
+      <!-- Log de operaciones -->
+      <div class="operation-log" id="operationLog">
+        <div class="log-entry info">Sistema listo. Comienza insertando elementos...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <p>🎓 Blog educativo sobre Tablas Hash | Estructuras de Datos | 2025</p>
+      <p style="font-size: 0.85rem; margin-top: 0.5rem;">Creado con ❤️ usando HTML, CSS y JavaScript</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
